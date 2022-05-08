@@ -1,0 +1,20 @@
+PUT /scholarlyarticles
+{
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "text"
+      },
+      "description": {
+        "type": "text"
+      },
+      "keywords": {
+        "type": "text"
+      },
+      "datePublishedReg": {
+        "type": "date"
+      }
+    }
+  }
+  
+}

@@ -60,14 +60,18 @@
     color: white;
 }
 
+.ShowArticleList {
+    padding-top: 20px;
+}
 
 /* ArticleList Styles */
 .list {
     display: grid;
     margin: 20px 0 50px 0;
-    grid-template-columns: repeat(4, 1fr);
+    /* grid-template-columns: repeat(4, 1fr); */
+    grid-template-columns: repeat(auto-fit, 20rem);
     grid-auto-rows: 1fr;
-    grid-gap: 2em;
+    grid-gap: 1em;
 }
 
 .card-container {
@@ -77,6 +81,13 @@
     border-radius: 5px;
     overflow: hidden;
 }
+
+.mycard:hover {
+    grid-column: 1 / -1;
+    width: 1000px;
+    height: 400px;
+}
+
 
 .desc {
     height: 130px;

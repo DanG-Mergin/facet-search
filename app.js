@@ -1,6 +1,7 @@
 const express = require('express');
 const connectDB = require('./config/db');
-var cors = require('cors');
+const elasticClient = require('./config/elasticClient')
+const cors = require('cors');
 
 // routes
 const articles = require('./routes/api/articles');
@@ -10,7 +11,8 @@ const app = express();
 
 // Connect Database
 connectDB();
-
+// const BuildIndexes = require('./models/BuildIndexes');
+// BuildIndexes();
 // cors
 app.use(cors({ origin: true, credentials: true }));
 

@@ -1,5 +1,10 @@
 {
     "localMongoURI": "mongodb://localhost:27017",
+    "localElasticURI": "http://localhost:9200",
+    "localElasticAuth": {
+        "username": "elastic",
+        "password": "qPM2x05T4Vb5pwYJAFrI"
+    },
     "springerK": "accee3b433564fbc01c09750bd95ca89",
     "thesaurus": {
         "conscientiousness": [

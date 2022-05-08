@@ -47,6 +47,7 @@ class ShowArticleList extends Component {
             })
             .then(res => {
                 // update parent here
+                debugger;
                 this.setState({
                     // searchText: ''
                     articles: res.data.articles
@@ -106,7 +107,7 @@ class ShowArticleList extends Component {
                     <div className="row">
                         <div className="col-md-12">
                             <br />
-                            <h2 className="display-4 text-center">Articles List</h2>
+                            <h2 className="display-4 text-center"></h2>
                         </div>
 
                         {/* <div className="col-md-11">

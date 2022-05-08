@@ -3,6 +3,8 @@ const router = express.Router();
 const config = require('config');
 const thesaurus = config.get('thesaurus');
 
+const elasticClient = require('../../config/elasticClient');
+
 const nltkStopWords = new Set(config.get('nltkStopWords'));
 
 // TODO: this doesn't belong here
@@ -11,7 +13,7 @@ for (k in thesaurus) {
 }
 
 // Load Article model
-const Article = require('../../models/Article');
+const ScholarlyArticle = require('../../models/ScholarlyArticle');
 
 // @route GET api/articles/test
 // @description tests articles route
@@ -23,7 +25,7 @@ router.get('/test', (req, res) => res.send('article route testing!'));
 // @access Public
 router.get('/', (req, res) => {
     console.log(req);
-    Article.find()
+    ScholarlyArticle.find()
         .then(articles => res.json(articles))
         .catch(err => res.status(404).json({ noarticlesfound: 'No Articles found' }));
 });
@@ -45,32 +47,10 @@ router.get('/search', (req, res) => {
                 for (const k in thesaurus) {
                     console.log(thesaurus[k])
                     if (thesaurus[k].has(w)) {
-                        // acc['keys'].add(k);
-                        // console.log(...thesaurus[k])
-                        // acc['keys'].add(...thesaurus[k]);
                         acc['keys'] = new Set([...acc['keys'], ...thesaurus[k]])
-
-                        // if (k in acc) {
-                        //     acc[k].add(w);
-                        //     // preflattening with keys
-                        //     acc['keys'].add(w)
-                        // } else {
-                        //     acc[k] = new Set().add(w);
-                        //     acc['keys'].add(k);
-                        //     acc['keys'].add(w);
-                        // }
                     }
                 }
                 return acc;
-                // for (const [k, v] in Object.entries(thesaurus)) {
-                //     if (v in w) {
-                //         if (k in acc) {
-                //             acc[k].add(w);
-                //         } else {
-                //             acc[k] = new Set(w);
-                //         }
-                //     }
-                // }
             }, { keys: new Set() });
         return noStopWords;
     }
@@ -87,6 +67,60 @@ router.get('/search', (req, res) => {
             if (matches.keys.size) {
                 console.log(`found matches ${matches.keys}`);
                 console.log(`object ${Object.entries(matches)}`);
+                const q = [...matches.keys].join(' ');
+
+                elasticClient.search({
+                    index: 'scholarlyarticles',
+                    body: {
+                        query: {
+                            match: {
+                                description: q
+                            }
+                        }
+                    }
+                }).then(response => {
+                    console.log(response)
+                    if (response['statusCode'] && response['statusCode'] == 200) {
+                        let hits = response.body.hits.hits;
+                        // TODO: needs to get response from mongoose.  No time atm
+                        obs = hits.map(x => {
+                            return x['_source'];
+                        })
+                        res.json({ articles: obs })
+                        // console.log(obs);
+                        // sourceIds = hits.map(x => {
+                        //     return x['_source']['id'];
+                        // })
+                        // if (sourceIds.length) {
+                        //     // ScholarlyArticle.find({
+                        //     //     'id': {
+                        //     //         $in: sourceIds
+                        //     //     }
+                        //     // })
+                        //     ScholarlyArticle.find()
+                        //         .where('id')
+                        //         .in(sourceIds)
+                        //         .exec()
+                        //         .then(response => {
+                        //             console.log('articles')
+                        //             res.json(response)
+                        //         })
+                        //         .catch(err => res.status(404).json({ noarticlesfound: 'No Articles found' }));
+                        // }
+                    }
+                    // model.find({
+                    //     '_id': { $in: [
+                    //         mongoose.Types.ObjectId('4ed3ede8844f0f351100000c'),
+                    //         mongoose.Types.ObjectId('4ed3f117a844e0471100000d'), 
+                    //         mongoose.Types.ObjectId('4ed3f18132f50c491100000e')
+                    //     ]}
+                    // }, function(err, docs){
+                    //      console.log(docs);
+                    // });
+                })
+
+
+                // console.log(result)
                 // compare keys to target list and expand search
                 // this would be better done with an option for hte user
                 // if we have time.  Anyways pass the search terms in
@@ -96,8 +130,7 @@ router.get('/search', (req, res) => {
             }
         }
     }
-    res.status(404).json({ noarticlefound: 'No Article found' });
-    return;
+    // res.status(404).json({ noarticlefound: 'No Article found' });
     // Article.find()
     //     .then(articles => res.json(articles))
     //     .catch(err => res.status(404).json({ noarticlesfound: 'No Articles found' }));
@@ -107,7 +140,7 @@ router.get('/search', (req, res) => {
 // @description Get single article by id
 // @access Public
 router.get('/:id', (req, res) => {
-    Article.findById(req.params.id)
+    ScholarlyArticle.findById(req.params.id)
         .then(article => res.json(article))
         .catch(err => res.status(404).json({ noarticlefound: 'No Article found' }));
 });
@@ -117,7 +150,7 @@ router.get('/:id', (req, res) => {
 // @access Public
 router.post('/', (req, res) => {
     // curl -d '{"title":"title", "isbn":"1234", "author": "author1", "description":"descrip1",  "published_date": "10/1/2012", "publisher":"publisher1"}' -H "Content-Type: application/json" -X POST http://localhost:8082/articles
-    Article.create(req.body)
+    ScholarlyArticle.create(req.body)
         .then(article => res.json({ msg: 'Article added successfully' }))
         .catch(err => res.status(400).json({ error: 'Unable to add this article' }));
 });
@@ -126,7 +159,7 @@ router.post('/', (req, res) => {
 // @description Update article
 // @access Public
 router.put('/:id', (req, res) => {
-    Article.findByIdAndUpdate(req.params.id, req.body)
+    ScholarlyArticle.findByIdAndUpdate(req.params.id, req.body)
         .then(article => res.json({ msg: 'Updated successfully' }))
         .catch(err =>
             res.status(400).json({ error: 'Unable to update the Database' })
@@ -137,7 +170,7 @@ router.put('/:id', (req, res) => {
 // @description Delete article by id
 // @access Public
 router.delete('/:id', (req, res) => {
-    Article.findByIdAndRemove(req.params.id, req.body)
+    ScholarlyArticle.findByIdAndRemove(req.params.id, req.body)
         .then(article => res.json({ mgs: 'Article entry deleted successfully' }))
         .catch(err => res.status(404).json({ error: 'No such a article' }));
 });

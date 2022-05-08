@@ -1,0 +1,30 @@
+{
+    "name": "facet_search",
+    "version": "1.0.0",
+    "description": "final project for big data course using elastic search and mongo to index and search by natural human descriptors",
+    "main": "index.js",
+    "scripts": {
+        "dev": "nodemon app.js",
+        "test": "test"
+    },
+    "author": "Dan Goldberg",
+    "license": "ISC",
+    "devDependencies": {
+        "nodemon": "^2.0.16"
+    },
+    "dependencies": {
+        "axios": "^0.27.2",
+        "bcryptjs": "^2.4.3",
+        "body-parser": "^1.20.0",
+        "config": "^3.3.7",
+        "cors": "^2.8.5",
+        "elasticsearch": "^16.7.3",
+        "express": "^4.18.1",
+        "mongo-river-elastic": "^1.1.1",
+        "mongoosastic": "^5.0.0",
+        "mongoose": "^6.3.2",
+        "node-jsonl": "^0.1.0",
+        "tslib": "^2.4.0",
+        "validation": "^0.0.1"
+    }
+}

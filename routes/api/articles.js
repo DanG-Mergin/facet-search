@@ -87,53 +87,14 @@ router.get('/search', (req, res) => {
                             return x['_source'];
                         })
                         res.json({ articles: obs })
-                        // console.log(obs);
-                        // sourceIds = hits.map(x => {
-                        //     return x['_source']['id'];
-                        // })
-                        // if (sourceIds.length) {
-                        //     // ScholarlyArticle.find({
-                        //     //     'id': {
-                        //     //         $in: sourceIds
-                        //     //     }
-                        //     // })
-                        //     ScholarlyArticle.find()
-                        //         .where('id')
-                        //         .in(sourceIds)
-                        //         .exec()
-                        //         .then(response => {
-                        //             console.log('articles')
-                        //             res.json(response)
-                        //         })
-                        //         .catch(err => res.status(404).json({ noarticlesfound: 'No Articles found' }));
-                        // }
+
                     }
-                    // model.find({
-                    //     '_id': { $in: [
-                    //         mongoose.Types.ObjectId('4ed3ede8844f0f351100000c'),
-                    //         mongoose.Types.ObjectId('4ed3f117a844e0471100000d'), 
-                    //         mongoose.Types.ObjectId('4ed3f18132f50c491100000e')
-                    //     ]}
-                    // }, function(err, docs){
-                    //      console.log(docs);
-                    // });
+
                 })
-
-
-                // console.log(result)
-                // compare keys to target list and expand search
-                // this would be better done with an option for hte user
-                // if we have time.  Anyways pass the search terms in
-                // output should be organized according to directly related to search terms, vs 
-                // inferred  
 
             }
         }
     }
-    // res.status(404).json({ noarticlefound: 'No Article found' });
-    // Article.find()
-    //     .then(articles => res.json(articles))
-    //     .catch(err => res.status(404).json({ noarticlesfound: 'No Articles found' }));
 });
 
 // @route GET api/articles/:id
